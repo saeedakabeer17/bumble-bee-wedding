@@ -98,6 +98,8 @@ const DECISIONS = [
   { id: "D-008", category: "Venue & Logistics", decision: "Reception hall name", recommendation: "Resolved a factual naming conflict across records.", finalChoice: "IMA House — Trident Hall", status: "FINAL", date: "6 Sep 2026", cost: "—" },
   { id: "D-009", category: "Venue & Logistics / Church", decision: "Church exact name & address", recommendation: "Confirmed by Sandra, including full postal address.", finalChoice: "Jerusalem Mar Thoma Syrian Church, Blossom Road, Elamkulam, Kochi, Ernakulam, Kerala 682020", status: "FINAL", date: "6 Sep 2026", cost: "—" },
   { id: "D-010", category: "Venue & Logistics", decision: "Reception venue selection (IMA House vs Chackolas)", recommendation: "Already decided historically — IMA House won on proximity to church, cost and complimentary perks.", finalChoice: "IMA House (Trident Hall)", status: "FINAL (historical)", date: "—", cost: "—" },
+  { id: "D-011", category: "Bridal Party", decision: "Bridesmaid dress design guidelines", recommendation: "Small variation (sleeve style or neckline) keeps visual interest without looking disjointed; silhouette must stay consistent across all bridesmaids, and nothing overly revealing given the church setting.", finalChoice: "Styles may vary slightly (sleeves/neckline) but must share the same silhouette; not overly revealing.", status: "FINAL", date: "6 Sep 2026", cost: "—" },
+  { id: "D-012", category: "Bridal Party / Design & Branding", decision: "Bridesmaid dress colour assignment", recommendation: "Both mauve and olive/deep sage already sit inside the approved palette — either works. Still needs a per-person assignment that complements the champagne gown and each other.", finalChoice: "—", status: "AWAITING DECISION", date: "—", cost: "—" },
 ];
 
 const TASKS = [
@@ -129,7 +131,7 @@ const TASKS = [
   { id: "T-026", category: "Bride", task: "Decide hair colour", owner: "Sandra", priority: "MEDIUM", status: "IDEA", deadline: "—" },
   { id: "T-027", category: "Makeup & Hair", task: "Get hair coloured and cut", owner: "Sandra", priority: "MEDIUM", status: "IDEA", deadline: "—" },
   { id: "T-028", category: "Makeup & Hair", task: "Book MUA for rehearsal dinner", owner: "Sandra", priority: "MEDIUM", status: "COMPLETED", deadline: "—" },
-  { id: "T-029", category: "Bridal Party", task: "Pick bridesmaids dress material", owner: "Sandra", priority: "MEDIUM", status: "IDEA", deadline: "—" },
+  { id: "T-029", category: "Bridal Party", task: "Pick bridesmaids dress material", owner: "Sandra", priority: "MEDIUM", status: "IN PROGRESS", deadline: "10 Sep 2026 (material hunting planned)" },
   { id: "T-030", category: "Bridal Party", task: "Get bridesmaids dress stitched", owner: "Sandra", priority: "MEDIUM", status: "IDEA", deadline: "—" },
   { id: "T-031", category: "Overall Planning", task: "Block time for honeymoon", owner: "Sandra & George", priority: "MEDIUM", status: "IDEA", deadline: "—" },
   { id: "T-032", category: "Overall Planning", task: "Research options for honeymoon", owner: "Sandra & George", priority: "MEDIUM", status: "IDEA", deadline: "—" },
@@ -143,13 +145,15 @@ const TASKS = [
   { id: "T-040", category: "Invitations & Stationery / Reception", task: "Resolve reception time discrepancy (2 pm draft vs 1–3 PM schedule)", owner: "Sandra & George", priority: "MEDIUM", status: "IN PROGRESS", deadline: "—" },
   { id: "T-041", category: "Content & Social Media / Photography", task: "Confirm exact pre-wedding shoot date in November", owner: "Sandra & George", priority: "MEDIUM", status: "IDEA", deadline: "—" },
   { id: "T-042", category: "Church / Legal Requirements", task: "Confirm exact register marriage date in November", owner: "Sandra & George", priority: "MEDIUM", status: "IDEA", deadline: "—" },
-  { id: "T-043", category: "Bridal Party / Church Ceremony", task: "Confirm bridesmaid dress design restrictions (sleeveless, low-back, etc.)", owner: "Sandra", priority: "HIGH", status: "AWAITING DECISION", deadline: "—" },
+  { id: "T-043", category: "Bridal Party / Church Ceremony", task: "Confirm bridesmaid dress design restrictions (sleeveless, low-back, etc.)", owner: "Sandra", priority: "HIGH", status: "COMPLETED", deadline: "—" },
   { id: "T-044", category: "Venue & Logistics", task: "Confirm which floor the hall is on (2nd floor vs rooftop)", owner: "Sandra", priority: "HIGH", status: "AWAITING DECISION", deadline: "—" },
   { id: "T-045", category: "Venue & Logistics", task: "Confirm full list of hall-included services", owner: "Sandra", priority: "MEDIUM", status: "AWAITING DECISION", deadline: "—" },
   { id: "T-046", category: "Venue & Logistics", task: "Confirm exact hall capacity", owner: "Sandra", priority: "MEDIUM", status: "AWAITING DECISION", deadline: "—" },
   { id: "T-047", category: "Decor", task: "Send Elixir a brief before they lose interest", owner: "Sandra", priority: "HIGH", status: "AWAITING DECISION", deadline: "—" },
   { id: "T-048", category: "Decor", task: "Pick a decor reference to send St. Martins for a quote", owner: "Sandra", priority: "MEDIUM", status: "AWAITING DECISION", deadline: "—" },
   { id: "T-049", category: "Bride", task: "Decide on Sandra's reception saree/dress", owner: "Sandra", priority: "MEDIUM", status: "RESEARCHING", deadline: "—" },
+  { id: "T-050", category: "Bride", task: "Personal makeup for events & post-wedding", owner: "Sandra", priority: "LOW", status: "COMPLETED", deadline: "—" },
+  { id: "T-051", category: "Bridal Party", task: "Decide bridesmaid colour assignment (mauve vs olive/deep sage)", owner: "Sandra", priority: "MEDIUM", status: "AWAITING DECISION", deadline: "—" },
 ];
 
 const BUDGET = [
