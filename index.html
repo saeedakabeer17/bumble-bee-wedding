@@ -50,11 +50,11 @@ const BRIEF = {
 };
 
 const EVENTS = [
-  { id: "E-001", name: "Bridal shower / bachelorette", date: "TBD", time: "TBD", location: "TBD", guests: "TBD", budget: "TBD", status: "Not started", owner: "—" },
-  { id: "E-002", name: "Church wedding", date: "28 Dec 2026", time: "10:00 AM – 12:30 PM (tentative)", location: "Jerusalem Mar Thoma Syrian Church, Blossom Road, Elamkulam, Kochi, Ernakulam, Kerala 682020", guests: "TBD", budget: "TBD", status: "Confirmed (venue & address); time tentative", owner: "Joint" },
-  { id: "E-003", name: "Reception", date: "28 Dec 2026", time: "1:00 PM – 3:00 PM (tentative)", location: "IMA House — Trident Hall", guests: "~400–500 (est.)", budget: "Per-item (see Budget tab)", status: "Confirmed (venue); time tentative — differs from invitation draft's \"2 pm\" (see T-040)", owner: "Joint" },
-  { id: "E-004", name: "Register marriage", date: "November 2026 (TBD, tentative)", time: "TBD", location: "TBD", guests: "TBD", budget: "TBD", status: "Tentative — date TBD", owner: "Sandra & George" },
-  { id: "E-005", name: "Pre-wedding shoot", date: "November 2026 (TBD, tentative)", time: "TBD", location: "TBD", guests: "—", budget: "TBD", status: "Tentative — Pinterest board collected", owner: "Sandra & George" },
+  { id: "E-001", name: "Bridal shower / bachelorette", date: "TBD", time: "TBD", location: "TBD", mapLink: null, guests: "TBD", budget: "TBD", status: "Not started", owner: "—" },
+  { id: "E-002", name: "Church wedding", date: "28 Dec 2026", time: "10:00 AM – 12:30 PM (tentative)", location: "Jerusalem Mar Thoma Syrian Church, Blossom Road, Elamkulam, Kochi, Ernakulam, Kerala 682020", mapLink: "https://www.google.com/maps/search/?api=1&query=Jerusalem+Mar+Thoma+Syrian+Church%2C+Blossom+Road%2C+Elamkulam%2C+Kochi%2C+Ernakulam%2C+Kerala+682020", guests: "TBD", budget: "TBD", status: "Confirmed (venue & address); time tentative", owner: "Joint" },
+  { id: "E-003", name: "Reception", date: "28 Dec 2026", time: "1:00 PM – 3:00 PM (tentative)", location: "IMA House — Trident Hall", mapLink: "https://www.google.com/maps/search/?api=1&query=IMA+House%2C+Kathrikadavu%2C+Palarivattom%2C+Kochi%2C+Kerala+682025", guests: "~400–500 (est.)", budget: "Per-item (see Budget tab)", status: "Confirmed (venue); time tentative — differs from invitation draft's \"2 pm\" (see T-040). Map link found via web search, NOT yet confirmed by Sandra/George — please verify before sharing.", owner: "Joint" },
+  { id: "E-004", name: "Register marriage", date: "November 2026 (TBD, tentative)", time: "TBD", location: "TBD", mapLink: null, guests: "TBD", budget: "TBD", status: "Tentative — date TBD", owner: "Sandra & George" },
+  { id: "E-005", name: "Pre-wedding shoot", date: "November 2026 (TBD, tentative)", time: "TBD", location: "TBD", mapLink: null, guests: "—", budget: "TBD", status: "Tentative — Pinterest board collected", owner: "Sandra & George" },
 ];
 
 const GUESTS = [
@@ -140,6 +140,7 @@ const TASKS = [
   { id: "T-040", category: "Invitations & Stationery / Reception", task: "Resolve reception time discrepancy (2 pm draft vs 1–3 PM schedule)", owner: "Sandra & George", priority: "MEDIUM", status: "IN PROGRESS", deadline: "—" },
   { id: "T-041", category: "Content & Social Media / Photography", task: "Confirm exact pre-wedding shoot date in November", owner: "Sandra & George", priority: "MEDIUM", status: "IDEA", deadline: "—" },
   { id: "T-042", category: "Church / Legal Requirements", task: "Confirm exact register marriage date in November", owner: "Sandra & George", priority: "MEDIUM", status: "IDEA", deadline: "—" },
+  { id: "T-043", category: "Bridal Party / Church Ceremony", task: "Confirm bridesmaid dress design restrictions (sleeveless, low-back, etc.)", owner: "Sandra", priority: "HIGH", status: "AWAITING DECISION", deadline: "—" },
 ];
 
 const BUDGET = [
@@ -454,6 +455,11 @@ function Events() {
               <Row label="Budget" value={ev.budget} />
               <Row label="Owner" value={ev.owner} />
             </dl>
+            {ev.mapLink && (
+              <a href={ev.mapLink} target="_blank" rel="noopener noreferrer" className="inline-block mt-3 text-xs font-medium" style={{ color: "#4C5B3F" }}>
+                📍 Open venue in Google Maps
+              </a>
+            )}
             <div className="mt-3 pt-3 border-t text-xs space-y-1" style={{ borderColor: "#E7E2D8", color: "#8B887F" }}>
               <p><strong style={{ color: "#65635C" }}>Tasks:</strong> {relatedTasks[ev.name].join(", ") || "None logged"}</p>
               <p><strong style={{ color: "#65635C" }}>Decisions:</strong> {relatedDecisions[ev.name].join(", ") || "None logged"}</p>
