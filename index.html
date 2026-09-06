@@ -99,7 +99,7 @@ const DECISIONS = [
   { id: "D-009", category: "Venue & Logistics / Church", decision: "Church exact name & address", recommendation: "Confirmed by Sandra, including full postal address.", finalChoice: "Jerusalem Mar Thoma Syrian Church, Blossom Road, Elamkulam, Kochi, Ernakulam, Kerala 682020", status: "FINAL", date: "6 Sep 2026", cost: "—" },
   { id: "D-010", category: "Venue & Logistics", decision: "Reception venue selection (IMA House vs Chackolas)", recommendation: "Already decided historically — IMA House won on proximity to church, cost and complimentary perks.", finalChoice: "IMA House (Trident Hall)", status: "FINAL (historical)", date: "—", cost: "—" },
   { id: "D-011", category: "Bridal Party", decision: "Bridesmaid dress design guidelines", recommendation: "Small variation (sleeve style or neckline) keeps visual interest without looking disjointed; silhouette must stay consistent across all bridesmaids, and nothing overly revealing given the church setting.", finalChoice: "Styles may vary slightly (sleeves/neckline) but must share the same silhouette; not overly revealing.", status: "FINAL", date: "6 Sep 2026", cost: "—" },
-  { id: "D-012", category: "Bridal Party / Design & Branding", decision: "Bridesmaid dress colour assignment", recommendation: "Both mauve and olive/deep sage already sit inside the approved palette — either works. Still needs a per-person assignment that complements the champagne gown and each other.", finalChoice: "—", status: "AWAITING DECISION", date: "—", cost: "—" },
+  { id: "D-012", category: "Bridal Party / Design & Branding", decision: "Bridesmaid dress colour assignment", recommendation: "Olive Sage (#587056) and Deep Sage (#435845) are both mid-to-dark greens that read as sophisticated rather than muddy, and pair well with mauve and the champagne gown. Still needs a per-bridesmaid assignment.", finalChoice: "—", status: "AWAITING DECISION", date: "—", cost: "—" },
 ];
 
 const TASKS = [
@@ -181,6 +181,11 @@ const DESIGN = {
     { name: "Dusty Mauve", hex: "#B4909B" },
     { name: "Champagne", hex: "#D9C7A3" },
     { name: "Warm Ivory", hex: "#F3EEE4" },
+  ],
+  bridesmaidPalette: [
+    { name: "Mauve", hex: "#B4909B" },
+    { name: "Olive Sage", hex: "#587056" },
+    { name: "Deep Sage", hex: "#435845" },
   ],
   direction: "Contemporary Kerala Christian. Church stays sacred, minimal, respectful. Reception is more expressive, editorial and botanical — but both should clearly belong to the same wedding. Overall aesthetic: elegant, romantic, timeless, quiet luxury.",
   avoid: "Generic Indian wedding decor, excessive gold, glitter, heavy ornamentation, red/maroon-heavy palettes, giant floral walls, boho clichés, generic Instagram trends. (Pampas grass was removed from this list on 6 Sep 2026 at the couple's request — see D-004.)",
@@ -694,6 +699,20 @@ function Design() {
         </div>
         <p className="text-xs mt-4" style={{ color: "#8B887F" }}>Sage + mauve is the leading concept but is not yet locked as final (see T-017).</p>
       </Card>
+
+      <Card className="p-5 mb-5">
+        <h3 className="font-semibold mb-3" style={{ color: "#33312C" }}>Bridesmaid dress colour candidates (under discussion — D-012)</h3>
+        <div className="flex flex-wrap gap-4">
+          {DESIGN.bridesmaidPalette.map(c => (
+            <div key={c.name} className="flex flex-col items-center gap-2">
+              <div className="w-16 h-16 rounded-lg border" style={{ backgroundColor: c.hex, borderColor: "#E7E2D8" }} />
+              <p className="text-xs" style={{ color: "#65635C" }}>{c.name}</p>
+              <p className="text-xs" style={{ color: "#B0AC9F" }}>{c.hex}</p>
+            </div>
+          ))}
+        </div>
+        <p className="text-xs mt-4" style={{ color: "#8B887F" }}>From a "Sage Green Fabric Palette" reference (10-shade swatch chart). Who wears which tone is still to be decided.</p>
+      </Card>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
         <Card className="p-5">
           <h3 className="font-semibold mb-2" style={{ color: "#33312C" }}>Design direction</h3>
@@ -756,6 +775,12 @@ function WeddingWeek() {
           <li>28 Dec 2026 — Church wedding, Jerusalem Mar Thoma Syrian Church, 10:00 AM – 12:30 PM (tentative)</li>
           <li>28 Dec 2026 — Reception, IMA House — Trident Hall, 1:00 PM – 3:00 PM (tentative — differs from invitation draft's "2 pm", see T-040)</li>
         </ul>
+        <p className="text-xs mt-3" style={{ color: "#8B887F" }}>
+          Playlist in progress (not finalised) —{" "}
+          <a href="https://open.spotify.com/playlist/3Db3LP7frWL1bkKxZmUWnA" target="_blank" rel="noopener noreferrer" style={{ color: "#4C5B3F", fontWeight: 600 }}>
+            Sandy's Wedding on Spotify
+          </a>
+        </p>
       </Card>
     </div>
   );
