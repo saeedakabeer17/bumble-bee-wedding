@@ -61,17 +61,17 @@ const GUESTS = [
   { id: "G-001", name: "Sandra's Mother", side: "Bride", group: "Immediate family", relationship: "Mother", rsvp: "—", notes: "Name not yet on file" },
   { id: "G-002", name: "Sandra's Father", side: "Bride", group: "Immediate family", relationship: "Father", rsvp: "—", notes: "Name not yet on file" },
   { id: "G-003", name: "Sandra's Brother", side: "Bride", group: "Immediate family", relationship: "Brother", rsvp: "—", notes: "Name not yet on file — possibly invitation co-signee" },
-  { id: "G-004", name: "Saeeda", side: "Bride", group: "Bridal Party", relationship: "Bridesmaid", rsvp: "—", notes: "Bridesmaid list gives \"Sae\" — likely same person, please confirm" },
+  { id: "G-004", name: "Saeeda", side: "Bride", group: "Bridal Party", relationship: "Bridesmaid", rsvp: "—", notes: "Confirmed same person as \"Sae\" on the bridesmaid list. Missing contact info." },
   { id: "G-005", name: "Lamea Naser", side: "Bride", group: "Bridal Party", relationship: "Bridesmaid", rsvp: "—", notes: "Confirmed same person as \"Lamo\"/\"Lamea\". Doing Sandra's rehearsal-dinner makeup with friends." },
-  { id: "G-006", name: "Krisko", side: "Bride", group: "Bridal Party", relationship: "Bridesmaid", rsvp: "—", notes: "Bridesmaid list gives \"kriscoo\" — likely same person; also confirm vs. \"Chris\" (G-010)" },
+  { id: "G-006", name: "Krisko", side: "Bride", group: "Bridal Party", relationship: "Bridesmaid", rsvp: "—", notes: "Confirmed same person as \"kriscoo\". Confirmed distinct from Chris/Christina (G-010). Missing contact info." },
   { id: "G-007", name: "Anju", side: "Bride", group: "Bridal Party", relationship: "Bridesmaid", rsvp: "—", notes: "Missing contact info" },
   { id: "G-008", name: "Jiji", side: "Bride", group: "Friends", relationship: "Friend", rsvp: "—", notes: "Missing contact info — not on bridesmaid list" },
   { id: "G-009", name: "Gloria", side: "Bride", group: "Friends", relationship: "Friend (deceased)", rsvp: "N/A", notes: "Deceased — tribute planned with care (see T-009)" },
-  { id: "G-010", name: "Chris", side: "Bride", group: "Bridal Party", relationship: "Bridesmaid", rsvp: "—", notes: "Confirm whether different from Krisko/kriscoo (G-006)" },
+  { id: "G-010", name: "Christina (\"Chris\")", side: "Bride", group: "Bridal Party", relationship: "Bridesmaid", rsvp: "—", notes: "Confirmed: \"Chris\" is a nickname for this Christina, distinct from Krisko (G-006) and from the cousin Christina (G-014). There are two Christinas in the bridal party. Missing contact info." },
   { id: "G-011", name: "Aliyah", side: "Bride", group: "Bridal Party", relationship: "Bridesmaid", rsvp: "—", notes: "Missing contact info" },
   { id: "G-012", name: "Rushmi", side: "Bride", group: "Bridal Party", relationship: "Bridesmaid", rsvp: "—", notes: "Missing contact info" },
   { id: "G-013", name: "Zareen", side: "Bride", group: "Bridal Party", relationship: "Bridesmaid", rsvp: "—", notes: "Missing contact info" },
-  { id: "G-014", name: "Christina", side: "Bride", group: "Bridal Party", relationship: "Bridesmaid (Cousin)", rsvp: "—", notes: "Missing contact info" },
+  { id: "G-014", name: "Christina", side: "Bride", group: "Bridal Party", relationship: "Bridesmaid (Cousin)", rsvp: "—", notes: "This is the cousin Christina — distinct from Christina/\"Chris\" (G-010), who is not a cousin. Missing contact info." },
   { id: "G-015", name: "Jincy", side: "Bride", group: "Bridal Party", relationship: "Bridesmaid", rsvp: "—", notes: "Missing contact info" },
   { id: "G-016", name: "Aishu", side: "Bride", group: "Bridal Party", relationship: "Bridesmaid", rsvp: "—", notes: "Missing contact info" },
 ];
@@ -172,7 +172,7 @@ const RISKS = [
   { risk: "Live band booked with no name/contact/price on file", probability: "Medium", impact: "Medium", owner: "Owner required", mitigation: "Log the band's details properly (T-012). Makeup is now resolved — Luxe by Sona Nalinan.", status: "Open" },
   { risk: "Emcee not yet sourced", probability: "Medium", impact: "Medium", owner: "Sandra", mitigation: "Start shortlisting — good emcees get booked out closer to December (T-001).", status: "Open" },
   { risk: "Invitation blocked by open decisions (verse, monogram, brother's name, ceremony time)", probability: "High", impact: "Medium", owner: "Sandra & George", mitigation: "Resolve D-002, D-001 and T-005 to unblock printing.", status: "Open" },
-  { risk: "Bridesmaid identity overlaps unconfirmed (Sae/Saeeda, kriscoo/Krisko vs Chris)", probability: "Medium", impact: "Low", owner: "Sandra", mitigation: "Confirm which names refer to the same people (T-014). Lamea/Lamo already confirmed as one person.", status: "Open" },
+  { risk: "Bridesmaid contact info (phone/city) still missing for most of the bridal party", probability: "Medium", impact: "Low", owner: "Sandra", mitigation: "All identity overlaps are now resolved (Sae=Saeeda, kriscoo=Krisko, Lamea=Lamo, Chris≠Krisko) — just need to collect contact details (T-014).", status: "Open" },
 ];
 
 const DESIGN = {
