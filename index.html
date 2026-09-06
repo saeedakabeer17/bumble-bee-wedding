@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Sandra & George — Wedding Command Centre</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  body { margin: 0; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel" data-presets="react">
+const { useState, useEffect } = React;
+
+/* ---- Lightweight icon shims (standalone build has no lucide-react) ---- */
+function makeIcon(symbol) {
+  return function Icon({ size = 15, style = {} }) {
+    return <span style={{ fontSize: size, lineHeight: 1, display: "inline-block", ...style }}>{symbol}</span>;
+  };
+}
+const LayoutGrid = makeIcon("▦");
+const ListChecks = makeIcon("☑");
+const CalendarDays = makeIcon("📅");
+const Users = makeIcon("👥");
+const Store = makeIcon("🏬");
+const GitBranch = makeIcon("🔀");
+const Wallet = makeIcon("💰");
+const Palette = makeIcon("🎨");
+const PartyPopper = makeIcon("🎉");
+const CalendarClock = makeIcon("🗓");
+const AlertTriangle = makeIcon("⚠");
+const ChevronDown = makeIcon("▾");
+const Phone = makeIcon("☎");
+
+
+/* ============================================================
+   PROJECT DATA — pulled directly from Sandra_Wedding_Planning.xlsx
+   as of 6 September 2026. Nothing here is invented; blanks are
+   left as "—" or marked "Not yet on file" rather than guessed.
+   ============================================================ */
+
+const BRIEF = {
+  weddingDate: "2026-12-28",
+  budgetNote: "No overall/total budget is being set, by the couple's choice (a friend and her fiancé are funding the wedding). Budgets are set per item/booking as each one comes up.",
+};
+
+const EVENTS = [
+  { id: "E-001", name: "Bridal shower / bachelorette", date: "TBD", time: "TBD", location: "TBD", guests: "TBD", budget: "TBD", status: "Not started", owner: "—" },
+  { id: "E-002", name: "Church wedding", date: "28 Dec 2026", time: "10:00 AM – 12:30 PM (tentative)", location: "Jerusalem Mar Thoma Syrian Church, Blossom Road, Elamkulam, Kochi, Ernakulam, Kerala 682020", guests: "TBD", budget: "TBD", status: "Confirmed (venue & address); time tentative", owner: "Joint" },
+  { id: "E-003", name: "Reception", date: "28 Dec 2026", time: "1:00 PM – 3:00 PM (tentative)", location: "IMA House — Trident Hall", guests: "~400–500 (est.)", budget: "Per-item (see Budget tab)", status: "Confirmed (venue); time tentative — differs from invitation draft's \"2 pm\" (see T-040)", owner: "Joint" },
+  { id: "E-004", name: "Register marriage", date: "November 2026 (TBD, tentative)", time: "TBD", location: "TBD", guests: "TBD", budget: "TBD", status: "Tentative — date TBD", owner: "Sandra & George" },
+  { id: "E-005", name: "Pre-wedding shoot", date: "November 2026 (TBD, tentative)", time: "TBD", location: "TBD", guests: "—", budget: "TBD", status: "Tentative — Pinterest board collected", owner: "Sandra & George" },
+];
+
+const GUESTS = [
+  { id: "G-001", name: "Sandra's Mother", side: "Bride", group: "Immediate family", relationship: "Mother", rsvp: "—", notes: "Name not yet on file" },
+  { id: "G-002", name: "Sandra's Father", side: "Bride", group: "Immediate family", relationship: "Father", rsvp: "—", notes: "Name not yet on file" },
+  { id: "G-003", name: "Sandra's Brother", side: "Bride", group: "Immediate family", relationship: "Brother", rsvp: "—", notes: "Name not yet on file — possibly invitation co-signee" },
+  { id: "G-004", name: "Saeeda", side: "Bride", group: "Bridal Party", relationship: "Bridesmaid", rsvp: "—", notes: "Bridesmaid list gives \"Sae\" — likely same person, please confirm" },
+  { id: "G-005", name: "Lamea Naser", side: "Bride", group: "Bridal Party", relationship: "Bridesmaid", rsvp: "—", notes: "Confirmed same person as \"Lamo\"/\"Lamea\". Doing Sandra's rehearsal-dinner makeup with friends." },
+  { id: "G-006", name: "Krisko", side: "Bride", group: "Bridal Party", relationship: "Bridesmaid", rsvp: "—", notes: "Bridesmaid list gives \"kriscoo\" — likely same person; also confirm vs. \"Chris\" (G-010)" },
+  { id: "G-007", name: "Anju", side: "Bride", group: "Bridal Party", relationship: "Bridesmaid", rsvp: "—", notes: "Missing contact info" },
+  { id: "G-008", name: "Jiji", side: "Bride", group: "Friends", relationship: "Friend", rsvp: "—", notes: "Missing contact info — not on bridesmaid list" },
+  { id: "G-009", name: "Gloria", side: "Bride", group: "Friends", relationship: "Friend (deceased)", rsvp: "N/A", notes: "Deceased — tribute planned with care (see T-009)" },
+  { id: "G-010", name: "Chris", side: "Bride", group: "Bridal Party", relationship: "Bridesmaid", rsvp: "—", notes: "Confirm whether different from Krisko/kriscoo (G-006)" },
+  { id: "G-011", name: "Aliyah", side: "Bride", group: "Bridal Party", relationship: "Bridesmaid", rsvp: "—", notes: "Missing contact info" },
+  { id: "G-012", name: "Rushmi", side: "Bride", group: "Bridal Party", relationship: "Bridesmaid", rsvp: "—", notes: "Missing contact info" },
+  { id: "G-013", name: "Zareen", side: "Bride", group: "Bridal Party", relationship: "Bridesmaid", rsvp: "—", notes: "Missing contact info" },
+  { id: "G-014", name: "Christina", side: "Bride", group: "Bridal Party", relationship: "Bridesmaid (Cousin)", rsvp: "—", notes: "Missing contact info" },
+  { id: "G-015", name: "Jincy", side: "Bride", group: "Bridal Party", relationship: "Bridesmaid", rsvp: "—", notes: "Missing contact info" },
+  { id: "G-016", name: "Aishu", side: "Bride", group: "Bridal Party", relationship: "Bridesmaid", rsvp: "—", notes: "Missing contact info" },
+];
+
+const VENDORS = [
+  { id: "V-001", category: "Photography & Videography", name: "Twelvef Moments", quote: "₹165,000", finalCost: "₹165,000", status: "BOOKED", deposit: "₹10,000 (paid)", balance: "₹155,000", dueDate: "30 Dec 2026: ₹125,000; final ₹30,000 after album design", contact: "GPay 7559006626 (bank details in contract)", notes: "Contract signed. Covers Wedding Eve, Church, Reception incl. YouTube live." },
+  { id: "V-002", category: "Makeup & Hair", name: "Luxe by Sona Nalinan", quote: "~₹55,000 (approx.)", finalCost: "~₹55,000 (approx., not itemised)", status: "BOOKED", deposit: "—", balance: "—", dueDate: "—", contact: "Instagram: @luxe_by_sonanalinan", notes: "Wedding-day makeup. Budget is an approximate figure from Sandra, not a confirmed final quote." },
+  { id: "V-006", category: "Makeup & Hair", name: "Rehearsal dinner makeup — Lamea Naser and friends", quote: "₹0 (informal)", finalCost: "₹0", status: "BOOKED", deposit: "—", balance: "—", dueDate: "—", contact: "—", notes: "Informal arrangement — Sandra's rehearsal-dinner (27 Dec) makeup done by friends, not a paid vendor." },
+  { id: "V-003", category: "Entertainment", name: "Live band — name not yet recorded", quote: "—", finalCost: "—", status: "BOOKED", deposit: "—", balance: "—", dueDate: "—", contact: "—", notes: "Confirmed booked for music; name, contact and price not yet provided (see T-012)." },
+  { id: "V-004", category: "Entertainment", name: "Emcee", quote: "—", finalCost: "—", status: "RESEARCHING", deposit: "—", balance: "—", dueDate: "—", contact: "—", notes: "Not yet sourced. Owner: Sandra." },
+  { id: "V-005", category: "Decor", name: "Reception decorator — name not yet recorded", quote: "—", finalCost: "—", status: "SHORTLISTED", deposit: "—", balance: "—", dueDate: "—", contact: "—", notes: "Stage mockup matches palette direction. Pampas grass in the mockup is an approved exception (see D-004), not a conflict." },
+];
+
+const DECISIONS = [
+  { id: "D-001", category: "Design & Branding", decision: "Wedding monogram design", recommendation: "Fits the palette well — recommend approving for invitation, stage and favours.", finalChoice: "—", status: "RECOMMENDED", date: "—", cost: "—" },
+  { id: "D-002", category: "Invitations & Stationery", decision: "Invitation scripture verse", recommendation: "Ecclesiastes 3:11 currently favoured by the friend group — not yet a couple decision.", finalChoice: "—", status: "AWAITING DECISION", date: "—", cost: "—" },
+  { id: "D-003", category: "Invitations & Stationery", decision: "Invitation visual design style", recommendation: "Pending review of Instagram reference against the design bible.", finalChoice: "—", status: "RESEARCHING", date: "—", cost: "—" },
+  { id: "D-004", category: "Decor / Reception", decision: "Reception stage & backdrop concept", recommendation: "Strong palette fit. Pampas grass approved as an explicit exception to the avoid-list — no longer a blocker. Still needs a named decorator before FINAL.", finalChoice: "—", status: "RECOMMENDED", date: "6 Sep 2026", cost: "—" },
+  { id: "D-005", category: "Decor", decision: "Entrance mirror / floral installation", recommendation: "Strong concept fit; adapt colours from lilac reference to sage/mauve/champagne.", finalChoice: "—", status: "SHORTLISTED", date: "—", cost: "—" },
+  { id: "D-006", category: "Gifts & Favours", decision: "Wedding favour type (candles vs chocolates)", recommendation: "Needs final guest count and monogram approval first.", finalChoice: "—", status: "AWAITING DECISION", date: "—", cost: "Cap: ₹14,000" },
+  { id: "D-007", category: "Photography & Videography", decision: "Photography & videography vendor", recommendation: "Confirmed.", finalChoice: "Twelvef Moments", status: "FINAL", date: "—", cost: "₹165,000" },
+  { id: "D-008", category: "Venue & Logistics", decision: "Reception hall name", recommendation: "Resolved a factual naming conflict across records.", finalChoice: "IMA House — Trident Hall", status: "FINAL", date: "6 Sep 2026", cost: "—" },
+  { id: "D-009", category: "Venue & Logistics / Church", decision: "Church exact name & address", recommendation: "Confirmed by Sandra, including full postal address.", finalChoice: "Jerusalem Mar Thoma Syrian Church, Blossom Road, Elamkulam, Kochi, Ernakulam, Kerala 682020", status: "FINAL", date: "6 Sep 2026", cost: "—" },
+];
+
+const TASKS = [
+  { id: "T-001", category: "Entertainment", task: "Source and book an emcee", owner: "Sandra", priority: "HIGH", status: "RESEARCHING", deadline: "—" },
+  { id: "T-002", category: "Gifts & Favours", task: "Decide wedding favour: candles vs chocolates", owner: "Sandra & George", priority: "MEDIUM", status: "AWAITING DECISION", deadline: "—" },
+  { id: "T-003", category: "Invitations & Stationery", task: "Finalise invitation scripture verse", owner: "Sandra & George", priority: "HIGH", status: "AWAITING DECISION", deadline: "—" },
+  { id: "T-004", category: "Invitations & Stationery / Venue", task: "Resolve reception hall name conflict", owner: "Sandra & George", priority: "CRITICAL", status: "COMPLETED", deadline: "—" },
+  { id: "T-005", category: "Invitations & Stationery", task: "Fill missing invitation draft details", owner: "Sandra & George", priority: "HIGH", status: "IN PROGRESS", deadline: "—" },
+  { id: "T-006", category: "Design & Branding", task: "Approve monogram design", owner: "Sandra & George", priority: "HIGH", status: "AWAITING DECISION", deadline: "—" },
+  { id: "T-007", category: "Decor", task: "Pampas grass in stage mockup — resolved", owner: "Sandra & George", priority: "MEDIUM", status: "COMPLETED", deadline: "—" },
+  { id: "T-008", category: "Bride", task: "Source rehearsal dinner lehenga", owner: "Sandra", priority: "MEDIUM", status: "IN PROGRESS", deadline: "27 Dec 2026" },
+  { id: "T-009", category: "Guest Management / Content", task: "Plan a tribute for Gloria", owner: "Sandra", priority: "MEDIUM", status: "IDEA", deadline: "—" },
+  { id: "T-010", category: "Content & Social Media / Photography", task: "Review pre-wedding shoot inspiration", owner: "Sandra & George", priority: "MEDIUM", status: "RESEARCHING", deadline: "—" },
+  { id: "T-011", category: "Vendor Management", task: "Log makeup artist details", owner: "Sandra", priority: "MEDIUM", status: "COMPLETED", deadline: "—" },
+  { id: "T-012", category: "Vendor Management", task: "Log live band details", owner: "Owner required", priority: "MEDIUM", status: "AWAITING DECISION", deadline: "—" },
+  { id: "T-013", category: "Church / Legal Requirements", task: "Get full church address", owner: "Sandra & George", priority: "HIGH", status: "COMPLETED", deadline: "—" },
+  { id: "T-014", category: "Bridal Party", task: "Confirm bridesmaid list and gather contact details", owner: "Sandra", priority: "MEDIUM", status: "AWAITING DECISION", deadline: "—" },
+  { id: "T-015", category: "Bride", task: "Begin wedding gown customisation", owner: "Sandra", priority: "CRITICAL", status: "RESEARCHING", deadline: "Start no later than late Sept 2026" },
+  { id: "T-016", category: "Guest Management", task: "Confirm final guest count", owner: "Sandra & George", priority: "HIGH", status: "AWAITING DECISION", deadline: "—" },
+  { id: "T-017", category: "Design & Branding", task: "Confirm colour palette as final (or compare alternatives)", owner: "Sandra & George", priority: "MEDIUM", status: "AWAITING DECISION", deadline: "—" },
+  { id: "T-018", category: "Groom", task: "Decide groom's outfit direction", owner: "George", priority: "MEDIUM", status: "IDEA", deadline: "—" },
+  { id: "T-019", category: "Bridal Shower / Bachelorette", task: "Set date, format and guest list for bridal shower", owner: "Sandra", priority: "MEDIUM", status: "IDEA", deadline: "—" },
+  { id: "T-020", category: "Church / Legal Requirements", task: "Plan register marriage date & logistics", owner: "Sandra & George", priority: "LOW", status: "IDEA", deadline: "—" },
+  { id: "T-021", category: "Bridal Party", task: "Compile groom's side bridal party (groomsmen) list", owner: "George", priority: "LOW", status: "IDEA", deadline: "—" },
+  { id: "T-022", category: "Accommodation / Transport", task: "Map out guest travel: arrival timing, stay & transport", owner: "Sandra & George", priority: "MEDIUM", status: "IDEA", deadline: "—" },
+  { id: "T-023", category: "Guest Management", task: "Set up per-event RSVP tracking", owner: "Sandra & George", priority: "LOW", status: "IDEA", deadline: "—" },
+  { id: "T-024", category: "Wedding Week", task: "Build wedding-week runbook", owner: "Sandra & George", priority: "LOW", status: "ON HOLD", deadline: "—" },
+  { id: "T-025", category: "Wedding Day Execution", task: "Build wedding-day run sheet", owner: "Sandra & George", priority: "LOW", status: "ON HOLD", deadline: "—" },
+  { id: "T-026", category: "Bride", task: "Decide hair colour", owner: "Sandra", priority: "MEDIUM", status: "IDEA", deadline: "—" },
+  { id: "T-027", category: "Makeup & Hair", task: "Get hair coloured and cut", owner: "Sandra", priority: "MEDIUM", status: "IDEA", deadline: "—" },
+  { id: "T-028", category: "Makeup & Hair", task: "Book MUA for rehearsal dinner", owner: "Sandra", priority: "MEDIUM", status: "COMPLETED", deadline: "—" },
+  { id: "T-029", category: "Bridal Party", task: "Pick bridesmaids dress material", owner: "Sandra", priority: "MEDIUM", status: "IDEA", deadline: "—" },
+  { id: "T-030", category: "Bridal Party", task: "Get bridesmaids dress stitched", owner: "Sandra", priority: "MEDIUM", status: "IDEA", deadline: "—" },
+  { id: "T-031", category: "Overall Planning", task: "Block time for honeymoon", owner: "Sandra & George", priority: "MEDIUM", status: "IDEA", deadline: "—" },
+  { id: "T-032", category: "Overall Planning", task: "Research options for honeymoon", owner: "Sandra & George", priority: "MEDIUM", status: "IDEA", deadline: "—" },
+  { id: "T-033", category: "Bride", task: "Buy nighties and other personal items", owner: "Sandra", priority: "LOW", status: "IDEA", deadline: "—" },
+  { id: "T-034", category: "Bride", task: "Buy dress for pre-wedding shoot", owner: "Sandra", priority: "MEDIUM", status: "IDEA", deadline: "—" },
+  { id: "T-035", category: "Bride", task: "List down other items to buy", owner: "Sandra", priority: "LOW", status: "IDEA", deadline: "—" },
+  { id: "T-036", category: "Jewellery & Accessories", task: "Jewellery plan — buy vs rental", owner: "Sandra", priority: "MEDIUM", status: "IDEA", deadline: "—" },
+  { id: "T-037", category: "Jewellery & Accessories", task: "Footwear", owner: "Sandra", priority: "LOW", status: "IDEA", deadline: "—" },
+  { id: "T-038", category: "Entertainment", task: "Prepare playlist", owner: "Sandra & George", priority: "MEDIUM", status: "IDEA", deadline: "—" },
+  { id: "T-039", category: "Entertainment", task: "Plan dances and choreography", owner: "Sandra & George", priority: "MEDIUM", status: "IDEA", deadline: "—" },
+  { id: "T-040", category: "Invitations & Stationery / Reception", task: "Resolve reception time discrepancy (2 pm draft vs 1–3 PM schedule)", owner: "Sandra & George", priority: "MEDIUM", status: "IN PROGRESS", deadline: "—" },
+  { id: "T-041", category: "Content & Social Media / Photography", task: "Confirm exact pre-wedding shoot date in November", owner: "Sandra & George", priority: "MEDIUM", status: "IDEA", deadline: "—" },
+  { id: "T-042", category: "Church / Legal Requirements", task: "Confirm exact register marriage date in November", owner: "Sandra & George", priority: "MEDIUM", status: "IDEA", deadline: "—" },
+];
+
+const BUDGET = [
+  { category: "Photography & Videography", final: "₹165,000", paid: "₹10,000", balance: "₹155,000", status: "PARTIALLY PAID", vendor: "Twelvef Moments" },
+  { category: "Makeup & Hair", final: "~₹55,000 (approx.)", paid: "—", balance: "—", status: "QUOTED (approx.)", vendor: "Luxe by Sona Nalinan" },
+  { category: "Gifts & Favours", final: "—", paid: "—", balance: "—", status: "NOT YET DUE", vendor: "TBD (cap ₹14,000)" },
+];
+
+// Risks are derived from open conflicts/notes already logged in the project
+// records, not a separate risk register — none exists yet in the workbook.
+// Probability/Impact are the assistant's qualitative read, not user figures.
+const RISKS = [
+  { risk: "Wedding gown customisation timeline is tight — needs 2 months + buffer, and the clock is already running", probability: "High", impact: "High", owner: "Sandra", mitigation: "Start immediately if not already underway (see T-015).", status: "Open" },
+  { risk: "Guest count is a 400–500 range, not a fixed number", probability: "High", impact: "High", owner: "Sandra & George", mitigation: "Firm up the number — it drives invitations, favours, seating, transport (T-016).", status: "Open" },
+  { risk: "Reception decorator not yet booked (mockup only)", probability: "Medium", impact: "High", owner: "Sandra & George", mitigation: "Book a named decorator before peak-season availability tightens.", status: "Open" },
+  { risk: "Live band booked with no name/contact/price on file", probability: "Medium", impact: "Medium", owner: "Owner required", mitigation: "Log the band's details properly (T-012). Makeup is now resolved — Luxe by Sona Nalinan.", status: "Open" },
+  { risk: "Emcee not yet sourced", probability: "Medium", impact: "Medium", owner: "Sandra", mitigation: "Start shortlisting — good emcees get booked out closer to December (T-001).", status: "Open" },
+  { risk: "Invitation blocked by open decisions (verse, monogram, brother's name, ceremony time)", probability: "High", impact: "Medium", owner: "Sandra & George", mitigation: "Resolve D-002, D-001 and T-005 to unblock printing.", status: "Open" },
+  { risk: "Bridesmaid identity overlaps unconfirmed (Sae/Saeeda, kriscoo/Krisko vs Chris)", probability: "Medium", impact: "Low", owner: "Sandra", mitigation: "Confirm which names refer to the same people (T-014). Lamea/Lamo already confirmed as one person.", status: "Open" },
+];
+
+const DESIGN = {
+  palette: [
+    { name: "Sage Green", hex: "#8A9A7E" },
+    { name: "Dusty Mauve", hex: "#B4909B" },
+    { name: "Champagne", hex: "#D9C7A3" },
+    { name: "Warm Ivory", hex: "#F3EEE4" },
+  ],
+  direction: "Contemporary Kerala Christian. Church stays sacred, minimal, respectful. Reception is more expressive, editorial and botanical — but both should clearly belong to the same wedding. Overall aesthetic: elegant, romantic, timeless, quiet luxury.",
+  avoid: "Generic Indian wedding decor, excessive gold, glitter, heavy ornamentation, red/maroon-heavy palettes, giant floral walls, boho clichés, generic Instagram trends. (Pampas grass was removed from this list on 6 Sep 2026 at the couple's request — see D-004.)",
+  approvedReferences: [],
+  pendingDecisions: ["D-001 Monogram design (RECOMMENDED)", "D-003 Invitation visual style (RESEARCHING)", "D-005 Entrance mirror installation (SHORTLISTED)", "D-006 Wedding favours (AWAITING DECISION)"],
+  rejectedConcepts: [],
+};
+
+/* ============================================================ */
+
+const STATUS_STYLES = {
+  FINAL: { bg: "#EAF0E6", text: "#4C5B3F", border: "#C9D8BE" },
+  COMPLETED: { bg: "#EAF0E6", text: "#4C5B3F", border: "#C9D8BE" },
+  BOOKED: { bg: "#EAF0E6", text: "#4C5B3F", border: "#C9D8BE" },
+  CONFIRMED: { bg: "#EAF0E6", text: "#4C5B3F", border: "#C9D8BE" },
+  RECOMMENDED: { bg: "#F3EEE4", text: "#8A6D3B", border: "#E3D5B8" },
+  SHORTLISTED: { bg: "#F3EEE4", text: "#8A6D3B", border: "#E3D5B8" },
+  RESEARCHING: { bg: "#EFE6E9", text: "#8A5A66", border: "#DDC3CB" },
+  "AWAITING DECISION": { bg: "#F7ECE6", text: "#A05A3A", border: "#EBCEBB" },
+  "IN PROGRESS": { bg: "#EFE6E9", text: "#8A5A66", border: "#DDC3CB" },
+  IDEA: { bg: "#EEEEEC", text: "#65635C", border: "#DAD8D2" },
+  "ON HOLD": { bg: "#EEEEEC", text: "#65635C", border: "#DAD8D2" },
+  "NOT STARTED": { bg: "#EEEEEC", text: "#65635C", border: "#DAD8D2" },
+  "PARTIALLY PAID": { bg: "#F7ECE6", text: "#A05A3A", border: "#EBCEBB" },
+  "NOT YET DUE": { bg: "#EEEEEC", text: "#65635C", border: "#DAD8D2" },
+  Open: { bg: "#F7ECE6", text: "#A05A3A", border: "#EBCEBB" },
+};
+
+function StatusBadge({ status }) {
+  const key = (status || "").split(" (")[0].split(" —")[0].toUpperCase();
+  const s = STATUS_STYLES[key] || STATUS_STYLES[status] || { bg: "#EEEEEC", text: "#65635C", border: "#DAD8D2" };
+  return (
+    <span className="inline-block px-2.5 py-1 rounded text-xs font-medium whitespace-nowrap" style={{ backgroundColor: s.bg, color: s.text, border: `1px solid ${s.border}` }}>
+      {status}
+    </span>
+  );
+}
+
+const PRIORITY_STYLES = {
+  CRITICAL: { bg: "#F4E1DC", text: "#9A3F2A" },
+  HIGH: { bg: "#F7ECE6", text: "#A05A3A" },
+  MEDIUM: { bg: "#F3EEE4", text: "#8A6D3B" },
+  LOW: { bg: "#EEEEEC", text: "#65635C" },
+};
+
+function PriorityBadge({ priority }) {
+  const s = PRIORITY_STYLES[priority] || PRIORITY_STYLES.LOW;
+  return <span className="inline-block px-2 py-0.5 rounded text-xs font-semibold" style={{ backgroundColor: s.bg, color: s.text }}>{priority}</span>;
+}
+
+function Card({ children, className = "" }) {
+  return <div className={`bg-white rounded-lg border ${className}`} style={{ borderColor: "#E7E2D8" }}>{children}</div>;
+}
+
+function SectionHeading({ title, subtitle }) {
+  return (
+    <div className="mb-5">
+      <h2 className="text-2xl" style={{ fontFamily: "Georgia, 'Iowan Old Style', serif", color: "#33312C" }}>{title}</h2>
+      {subtitle && <p className="text-sm mt-1" style={{ color: "#8B887F" }}>{subtitle}</p>}
+    </div>
+  );
+}
+
+function useCountdown(targetDateStr) {
+  const [now, setNow] = useState(Date.now());
+  useEffect(() => {
+    const t = setInterval(() => setNow(Date.now()), 30000);
+    return () => clearInterval(t);
+  }, []);
+  const target = new Date(targetDateStr + "T00:00:00").getTime();
+  const diff = target - now;
+  const totalSeconds = Math.max(0, Math.floor(diff / 1000));
+  const days = Math.floor(totalSeconds / 86400);
+  const hours = Math.floor((totalSeconds % 86400) / 3600);
+  return { days, hours, passed: diff < 0 };
+}
+
+/* ---------------- Overview ---------------- */
+
+function Overview() {
+  const { days, hours, passed } = useCountdown(BRIEF.weddingDate);
+  const total = TASKS.length;
+  const completed = TASKS.filter(t => t.status === "COMPLETED").length;
+  const pct = Math.round((completed / total) * 100);
+  const criticalOpen = TASKS.filter(t => t.priority === "CRITICAL" && t.status !== "COMPLETED");
+  const upcoming = TASKS.filter(t => t.deadline !== "—");
+  const decisionsNeeded = DECISIONS.filter(d => d.status === "AWAITING DECISION" || d.status === "RECOMMENDED");
+
+  return (
+    <div>
+      <SectionHeading title="Overview" subtitle="Sandra & George — 28 December 2026, Kerala" />
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <Card className="p-5">
+          <p className="text-xs uppercase tracking-wide" style={{ color: "#8B887F" }}>Wedding date</p>
+          <p className="text-2xl mt-1" style={{ fontFamily: "Georgia, serif", color: "#33312C" }}>28 Dec 2026</p>
+          <p className="text-xs mt-1" style={{ color: "#8B887F" }}>Monday</p>
+        </Card>
+        <Card className="p-5">
+          <p className="text-xs uppercase tracking-wide" style={{ color: "#8B887F" }}>Countdown</p>
+          <p className="text-2xl mt-1" style={{ fontFamily: "Georgia, serif", color: "#33312C" }}>{passed ? "Wedding day has passed" : `${days} days`}</p>
+          {!passed && <p className="text-xs mt-1" style={{ color: "#8B887F" }}>{hours} hrs</p>}
+        </Card>
+        <Card className="p-5">
+          <p className="text-xs uppercase tracking-wide" style={{ color: "#8B887F" }}>Overall progress</p>
+          <p className="text-2xl mt-1" style={{ fontFamily: "Georgia, serif", color: "#33312C" }}>{completed} / {total} tasks</p>
+          <div className="w-full h-1.5 rounded-full mt-2" style={{ backgroundColor: "#EEEEEC" }}>
+            <div className="h-1.5 rounded-full" style={{ width: `${pct}%`, backgroundColor: "#8A9A7E" }} />
+          </div>
+          <p className="text-xs mt-1" style={{ color: "#8B887F" }}>{pct}% complete</p>
+        </Card>
+        <Card className="p-5">
+          <p className="text-xs uppercase tracking-wide" style={{ color: "#8B887F" }}>Budget approach</p>
+          <p className="text-lg mt-1" style={{ fontFamily: "Georgia, serif", color: "#33312C" }}>Per-item, no total</p>
+          <p className="text-xs mt-1" style={{ color: "#8B887F" }}>~₹220,000 committed so far (photography + makeup, approx.)</p>
+        </Card>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
+        <Card className="p-5">
+          <h3 className="font-semibold mb-3" style={{ color: "#33312C" }}>Critical &amp; overdue tasks</h3>
+          {criticalOpen.length === 0 ? (
+            <p className="text-sm" style={{ color: "#65635C" }}>No open CRITICAL-priority tasks except <strong>T-015 (gown customisation)</strong>, which needs to start immediately — see Risks.</p>
+          ) : (
+            <ul className="space-y-2">
+              {criticalOpen.map(t => (
+                <li key={t.id} className="text-sm flex justify-between items-center gap-3">
+                  <span>{t.id} — {t.task}</span>
+                  <StatusBadge status={t.status} />
+                </li>
+              ))}
+            </ul>
+          )}
+          <div className="mt-3 pt-3 border-t text-sm" style={{ borderColor: "#E7E2D8", color: "#65635C" }}>No overdue tasks — most tasks don't have deadlines set yet.</div>
+        </Card>
+
+        <Card className="p-5">
+          <h3 className="font-semibold mb-3" style={{ color: "#33312C" }}>Upcoming deadlines</h3>
+          <ul className="space-y-2">
+            {upcoming.map(t => (
+              <li key={t.id} className="text-sm flex justify-between items-center gap-3">
+                <span>{t.task}</span>
+                <span className="text-xs font-medium text-right" style={{ color: "#A05A3A" }}>{t.deadline}</span>
+              </li>
+            ))}
+          </ul>
+        </Card>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <Card className="p-5">
+          <h3 className="font-semibold mb-3" style={{ color: "#33312C" }}>Decisions needed ({decisionsNeeded.length})</h3>
+          <ul className="space-y-2">
+            {decisionsNeeded.map(d => (
+              <li key={d.id} className="text-sm flex justify-between items-center gap-3">
+                <span>{d.id} — {d.decision}</span>
+                <StatusBadge status={d.status} />
+              </li>
+            ))}
+          </ul>
+        </Card>
+
+        <Card className="p-5">
+          <h3 className="font-semibold mb-3 flex items-center gap-2" style={{ color: "#33312C" }}>
+            <AlertTriangle size={16} style={{ color: "#A05A3A" }} /> Major risks
+          </h3>
+          <ul className="space-y-2">
+            {RISKS.slice(0, 4).map((r, i) => <li key={i} className="text-sm" style={{ color: "#65635C" }}>{r.risk}</li>)}
+          </ul>
+          <p className="text-xs mt-3" style={{ color: "#8B887F" }}>See the Risks tab for the full list with mitigations.</p>
+        </Card>
+      </div>
+    </div>
+  );
+}
+
+/* ---------------- Tasks ---------------- */
+
+function Tasks() {
+  const [category, setCategory] = useState("All");
+  const [owner, setOwner] = useState("All");
+  const [status, setStatus] = useState("All");
+  const [priority, setPriority] = useState("All");
+
+  const categories = ["All", ...Array.from(new Set(TASKS.map(t => t.category)))];
+  const owners = ["All", ...Array.from(new Set(TASKS.map(t => t.owner)))];
+  const statuses = ["All", ...Array.from(new Set(TASKS.map(t => t.status)))];
+  const priorities = ["All", ...Array.from(new Set(TASKS.map(t => t.priority)))];
+
+  const filtered = TASKS.filter(t =>
+    (category === "All" || t.category === category) &&
+    (owner === "All" || t.owner === owner) &&
+    (status === "All" || t.status === status) &&
+    (priority === "All" || t.priority === priority)
+  );
+
+  return (
+    <div>
+      <SectionHeading title="Master Task Tracker" subtitle={`${filtered.length} of ${TASKS.length} tasks shown`} />
+      <div className="flex flex-wrap gap-3 mb-5">
+        <FilterSelect label="Category" value={category} onChange={setCategory} options={categories} />
+        <FilterSelect label="Owner" value={owner} onChange={setOwner} options={owners} />
+        <FilterSelect label="Status" value={status} onChange={setStatus} options={statuses} />
+        <FilterSelect label="Priority" value={priority} onChange={setPriority} options={priorities} />
+      </div>
+      <Card className="overflow-x-auto">
+        <table className="w-full text-sm">
+          <thead>
+            <tr className="text-left border-b" style={{ borderColor: "#E7E2D8", color: "#8B887F" }}>
+              <th className="p-3 font-medium">ID</th>
+              <th className="p-3 font-medium">Task</th>
+              <th className="p-3 font-medium">Category</th>
+              <th className="p-3 font-medium">Owner</th>
+              <th className="p-3 font-medium">Priority</th>
+              <th className="p-3 font-medium">Status</th>
+              <th className="p-3 font-medium">Deadline</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filtered.map(t => (
+              <tr key={t.id} className="border-b last:border-0" style={{ borderColor: "#F1EEE7" }}>
+                <td className="p-3 whitespace-nowrap" style={{ color: "#8B887F" }}>{t.id}</td>
+                <td className="p-3" style={{ color: "#33312C" }}>{t.task}</td>
+                <td className="p-3" style={{ color: "#65635C" }}>{t.category}</td>
+                <td className="p-3" style={{ color: "#65635C" }}>{t.owner}</td>
+                <td className="p-3"><PriorityBadge priority={t.priority} /></td>
+                <td className="p-3"><StatusBadge status={t.status} /></td>
+                <td className="p-3" style={{ color: "#65635C" }}>{t.deadline}</td>
+              </tr>
+            ))}
+            {filtered.length === 0 && <tr><td colSpan={7} className="p-6 text-center" style={{ color: "#8B887F" }}>No tasks match these filters.</td></tr>}
+          </tbody>
+        </table>
+      </Card>
+    </div>
+  );
+}
+
+function FilterSelect({ label, value, onChange, options }) {
+  return (
+    <label className="text-xs flex flex-col gap-1" style={{ color: "#8B887F" }}>
+      {label}
+      <div className="relative">
+        <select value={value} onChange={e => onChange(e.target.value)} className="appearance-none pr-8 pl-3 py-2 rounded border text-sm bg-white" style={{ borderColor: "#DAD5C9", color: "#33312C" }}>
+          {options.map(o => <option key={o} value={o}>{o}</option>)}
+        </select>
+        <ChevronDown size={14} className="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" style={{ color: "#8B887F" }} />
+      </div>
+    </label>
+  );
+}
+
+/* ---------------- Events ---------------- */
+
+function Events() {
+  const relatedTasks = {
+    "Bridal shower / bachelorette": ["T-019"],
+    "Church wedding": ["T-005"],
+    "Reception": ["T-006", "T-002"],
+    "Register marriage": ["T-020"],
+    "Pre-wedding shoot": ["T-010", "T-034"],
+  };
+  const relatedDecisions = {
+    "Bridal shower / bachelorette": [], "Church wedding": ["D-009"], "Reception": ["D-004", "D-005", "D-008"], "Register marriage": [], "Pre-wedding shoot": [],
+  };
+  const relatedVendors = {
+    "Bridal shower / bachelorette": [], "Church wedding": ["V-001"], "Reception": ["V-001", "V-002", "V-003", "V-004", "V-005"], "Register marriage": [], "Pre-wedding shoot": [],
+  };
+
+  return (
+    <div>
+      <SectionHeading title="Events" subtitle="Event Master" />
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {EVENTS.map(ev => (
+          <Card key={ev.id} className="p-5">
+            <div className="flex justify-between items-start gap-3 mb-3">
+              <h3 className="font-semibold" style={{ color: "#33312C" }}>{ev.name}</h3>
+              <StatusBadge status={ev.status} />
+            </div>
+            <dl className="text-sm space-y-1.5">
+              <Row label="Date" value={ev.date} />
+              <Row label="Time" value={ev.time} />
+              <Row label="Venue" value={ev.location} />
+              <Row label="Guests" value={ev.guests} />
+              <Row label="Budget" value={ev.budget} />
+              <Row label="Owner" value={ev.owner} />
+            </dl>
+            <div className="mt-3 pt-3 border-t text-xs space-y-1" style={{ borderColor: "#E7E2D8", color: "#8B887F" }}>
+              <p><strong style={{ color: "#65635C" }}>Tasks:</strong> {relatedTasks[ev.name].join(", ") || "None logged"}</p>
+              <p><strong style={{ color: "#65635C" }}>Decisions:</strong> {relatedDecisions[ev.name].join(", ") || "None logged"}</p>
+              <p><strong style={{ color: "#65635C" }}>Vendors:</strong> {relatedVendors[ev.name].join(", ") || "None logged"}</p>
+            </div>
+          </Card>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function Row({ label, value }) {
+  return (
+    <div className="flex justify-between gap-4">
+      <dt style={{ color: "#8B887F" }}>{label}</dt>
+      <dd className="text-right" style={{ color: "#33312C" }}>{value}</dd>
+    </div>
+  );
+}
+
+/* ---------------- Guests ---------------- */
+
+function Guests() {
+  const [groupFilter, setGroupFilter] = useState("All");
+  const total = GUESTS.length;
+  const brideSide = GUESTS.filter(g => g.side === "Bride").length;
+  const groomSide = GUESTS.filter(g => g.side === "Groom").length;
+  const bridalParty = GUESTS.filter(g => g.group === "Bridal Party").length;
+
+  const groups = ["All", ...Array.from(new Set(GUESTS.map(g => g.group)))];
+  const filtered = groupFilter === "All" ? GUESTS : GUESTS.filter(g => g.group === groupFilter);
+
+  return (
+    <div>
+      <SectionHeading title="Guest Management" subtitle="Master Guest List" />
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-5">
+        <Stat label="Total guests logged" value={total} />
+        <Stat label="Bride side" value={brideSide} />
+        <Stat label="Groom side" value={groomSide} />
+        <Stat label="Bridal party (bride's)" value={bridalParty} />
+      </div>
+      <Card className="p-4 mb-5 text-sm" style={{ color: "#65635C" }}>
+        Adults, children, RSVP, accommodation, transport and dietary requirements aren't on file yet for any guest.
+        None of the 16 logged guests have been assigned to a specific event (Bridal Shower / Church / Reception) yet.
+        Reception is separately estimated at ~400–500 guests overall.
+      </Card>
+      <div className="mb-4">
+        <FilterSelect label="Filter by group" value={groupFilter} onChange={setGroupFilter} options={groups} />
+      </div>
+      <Card className="overflow-x-auto">
+        <table className="w-full text-sm">
+          <thead>
+            <tr className="text-left border-b" style={{ borderColor: "#E7E2D8", color: "#8B887F" }}>
+              <th className="p-3 font-medium">Guest</th>
+              <th className="p-3 font-medium">Side</th>
+              <th className="p-3 font-medium">Group</th>
+              <th className="p-3 font-medium">Relationship</th>
+              <th className="p-3 font-medium">RSVP</th>
+              <th className="p-3 font-medium">Notes</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filtered.map(g => (
+              <tr key={g.id} className="border-b last:border-0" style={{ borderColor: "#F1EEE7" }}>
+                <td className="p-3" style={{ color: "#33312C" }}>{g.name}</td>
+                <td className="p-3" style={{ color: "#65635C" }}>{g.side}</td>
+                <td className="p-3" style={{ color: "#65635C" }}>{g.group}</td>
+                <td className="p-3" style={{ color: "#65635C" }}>{g.relationship}</td>
+                <td className="p-3" style={{ color: "#65635C" }}>{g.rsvp}</td>
+                <td className="p-3 text-xs" style={{ color: "#8B887F" }}>{g.notes}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </Card>
+    </div>
+  );
+}
+
+function Stat({ label, value }) {
+  return (
+    <Card className="p-4">
+      <p className="text-xs" style={{ color: "#8B887F" }}>{label}</p>
+      <p className="text-xl mt-1" style={{ fontFamily: "Georgia, serif", color: "#33312C" }}>{value}</p>
+    </Card>
+  );
+}
+
+/* ---------------- Vendors ---------------- */
+
+function Vendors() {
+  return (
+    <div>
+      <SectionHeading title="Vendor Database" />
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {VENDORS.map(v => (
+          <Card key={v.id} className="p-5">
+            <div className="flex justify-between items-start gap-3 mb-1">
+              <div>
+                <p className="text-xs" style={{ color: "#8B887F" }}>{v.category}</p>
+                <h3 className="font-semibold" style={{ color: "#33312C" }}>{v.name}</h3>
+              </div>
+              <StatusBadge status={v.status} />
+            </div>
+            <dl className="text-sm space-y-1.5 mt-3">
+              <Row label="Quote" value={v.quote} />
+              <Row label="Final cost" value={v.finalCost} />
+              <Row label="Deposit" value={v.deposit} />
+              <Row label="Balance" value={v.balance} />
+              <Row label="Payment due" value={v.dueDate} />
+            </dl>
+            <div className="mt-3 pt-3 border-t text-xs flex items-start gap-1.5" style={{ borderColor: "#E7E2D8", color: "#8B887F" }}>
+              <Phone size={13} className="mt-0.5 shrink-0" /><span>{v.contact}</span>
+            </div>
+            <p className="text-xs mt-2" style={{ color: "#8B887F" }}>{v.notes}</p>
+          </Card>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* ---------------- Decisions ---------------- */
+
+function Decisions() {
+  return (
+    <div>
+      <SectionHeading title="Decision Register" />
+      <Card className="overflow-x-auto">
+        <table className="w-full text-sm">
+          <thead>
+            <tr className="text-left border-b" style={{ borderColor: "#E7E2D8", color: "#8B887F" }}>
+              <th className="p-3 font-medium">ID</th>
+              <th className="p-3 font-medium">Decision</th>
+              <th className="p-3 font-medium">Recommendation</th>
+              <th className="p-3 font-medium">Final choice</th>
+              <th className="p-3 font-medium">Status</th>
+              <th className="p-3 font-medium">Date</th>
+              <th className="p-3 font-medium">Cost</th>
+            </tr>
+          </thead>
+          <tbody>
+            {DECISIONS.map(d => (
+              <tr key={d.id} className="border-b last:border-0 align-top" style={{ borderColor: "#F1EEE7" }}>
+                <td className="p-3 whitespace-nowrap" style={{ color: "#8B887F" }}>{d.id}</td>
+                <td className="p-3" style={{ color: "#33312C" }}>{d.decision}</td>
+                <td className="p-3 text-xs max-w-xs" style={{ color: "#65635C" }}>{d.recommendation}</td>
+                <td className="p-3" style={{ color: "#33312C" }}>{d.finalChoice}</td>
+                <td className="p-3"><StatusBadge status={d.status} /></td>
+                <td className="p-3 whitespace-nowrap" style={{ color: "#65635C" }}>{d.date}</td>
+                <td className="p-3 whitespace-nowrap" style={{ color: "#65635C" }}>{d.cost}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </Card>
+    </div>
+  );
+}
+
+/* ---------------- Budget ---------------- */
+
+function Budget() {
+  return (
+    <div>
+      <SectionHeading title="Budget Tracker" />
+      <Card className="p-5 mb-5 text-sm" style={{ color: "#65635C" }}>{BRIEF.budgetNote}</Card>
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-5">
+        <Stat label="Total committed" value="~₹220,000" />
+        <Stat label="Total paid" value="₹10,000" />
+        <Stat label="Total balance / pending" value="₹155,000 + ~₹55,000" />
+      </div>
+      <Card className="overflow-x-auto">
+        <table className="w-full text-sm">
+          <thead>
+            <tr className="text-left border-b" style={{ borderColor: "#E7E2D8", color: "#8B887F" }}>
+              <th className="p-3 font-medium">Category</th>
+              <th className="p-3 font-medium">Final</th>
+              <th className="p-3 font-medium">Paid</th>
+              <th className="p-3 font-medium">Balance</th>
+              <th className="p-3 font-medium">Status</th>
+              <th className="p-3 font-medium">Vendor</th>
+            </tr>
+          </thead>
+          <tbody>
+            {BUDGET.map((b, i) => (
+              <tr key={i} className="border-b last:border-0" style={{ borderColor: "#F1EEE7" }}>
+                <td className="p-3" style={{ color: "#33312C" }}>{b.category}</td>
+                <td className="p-3" style={{ color: "#65635C" }}>{b.final}</td>
+                <td className="p-3" style={{ color: "#65635C" }}>{b.paid}</td>
+                <td className="p-3" style={{ color: "#65635C" }}>{b.balance}</td>
+                <td className="p-3"><StatusBadge status={b.status} /></td>
+                <td className="p-3" style={{ color: "#65635C" }}>{b.vendor}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </Card>
+    </div>
+  );
+}
+
+/* ---------------- Design ---------------- */
+
+function Design() {
+  return (
+    <div>
+      <SectionHeading title="Design Bible" />
+      <Card className="p-5 mb-5">
+        <h3 className="font-semibold mb-3" style={{ color: "#33312C" }}>Current colour palette (under evaluation)</h3>
+        <div className="flex flex-wrap gap-4">
+          {DESIGN.palette.map(c => (
+            <div key={c.name} className="flex flex-col items-center gap-2">
+              <div className="w-16 h-16 rounded-lg border" style={{ backgroundColor: c.hex, borderColor: "#E7E2D8" }} />
+              <p className="text-xs" style={{ color: "#65635C" }}>{c.name}</p>
+            </div>
+          ))}
+        </div>
+        <p className="text-xs mt-4" style={{ color: "#8B887F" }}>Sage + mauve is the leading concept but is not yet locked as final (see T-017).</p>
+      </Card>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
+        <Card className="p-5">
+          <h3 className="font-semibold mb-2" style={{ color: "#33312C" }}>Design direction</h3>
+          <p className="text-sm" style={{ color: "#65635C" }}>{DESIGN.direction}</p>
+        </Card>
+        <Card className="p-5">
+          <h3 className="font-semibold mb-2" style={{ color: "#33312C" }}>Avoid</h3>
+          <p className="text-sm" style={{ color: "#65635C" }}>{DESIGN.avoid}</p>
+        </Card>
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <Card className="p-5">
+          <h3 className="font-semibold mb-2" style={{ color: "#33312C" }}>Approved references</h3>
+          <p className="text-sm" style={{ color: "#8B887F" }}>None yet — nothing has reached FINAL/APPROVED status.</p>
+        </Card>
+        <Card className="p-5">
+          <h3 className="font-semibold mb-2" style={{ color: "#33312C" }}>Pending decisions</h3>
+          <ul className="text-sm space-y-1.5" style={{ color: "#65635C" }}>{DESIGN.pendingDecisions.map((p, i) => <li key={i}>{p}</li>)}</ul>
+        </Card>
+        <Card className="p-5">
+          <h3 className="font-semibold mb-2" style={{ color: "#33312C" }}>Rejected concepts</h3>
+          <p className="text-sm" style={{ color: "#8B887F" }}>None logged yet.</p>
+        </Card>
+      </div>
+    </div>
+  );
+}
+
+/* ---------------- Bridal Shower ---------------- */
+
+function BridalShower() {
+  return (
+    <div>
+      <SectionHeading title="Bridal Shower / Mini Bachelorette" />
+      <Card className="p-6 text-sm" style={{ color: "#65635C" }}>
+        <p className="mb-3">Nothing has been filled in yet — see T-019 for setting the date, format and guest list.</p>
+        <dl className="space-y-1.5">
+          <Row label="Concept" value="Not decided" />
+          <Row label="Date" value="TBD" />
+          <Row label="Guest count" value="TBD" />
+          <Row label="Budget" value="TBD" />
+          <Row label="Status" value="Not started" />
+        </dl>
+        <p className="mt-4 text-xs" style={{ color: "#8B887F" }}>Reminder: the brief calls for something small, personal and low-effort — not a large traditional bachelorette.</p>
+      </Card>
+    </div>
+  );
+}
+
+/* ---------------- Wedding Week ---------------- */
+
+function WeddingWeek() {
+  return (
+    <div>
+      <SectionHeading title="Wedding Week" />
+      <Card className="p-6 text-sm" style={{ color: "#65635C" }}>
+        <p className="mb-3">Intentionally on hold (T-024, T-025) until vendors, guest numbers and event timings are further confirmed.</p>
+        <ul className="space-y-1.5 list-disc pl-5">
+          <li>27 Dec 2026 — Wedding Eve (rehearsal dinner; Sandra's lehenga in progress, T-008; makeup by friends — Lamea Naser and gang)</li>
+          <li>28 Dec 2026 — Church wedding, Jerusalem Mar Thoma Syrian Church, 10:00 AM – 12:30 PM (tentative)</li>
+          <li>28 Dec 2026 — Reception, IMA House — Trident Hall, 1:00 PM – 3:00 PM (tentative — differs from invitation draft's "2 pm", see T-040)</li>
+        </ul>
+      </Card>
+    </div>
+  );
+}
+
+/* ---------------- Risks ---------------- */
+
+function Risks() {
+  return (
+    <div>
+      <SectionHeading title="Risk Register" subtitle="Derived from open conflicts and notes already logged in the project — no separate risk register exists yet" />
+      <Card className="overflow-x-auto">
+        <table className="w-full text-sm">
+          <thead>
+            <tr className="text-left border-b" style={{ borderColor: "#E7E2D8", color: "#8B887F" }}>
+              <th className="p-3 font-medium">Risk</th>
+              <th className="p-3 font-medium">Probability</th>
+              <th className="p-3 font-medium">Impact</th>
+              <th className="p-3 font-medium">Owner</th>
+              <th className="p-3 font-medium">Mitigation</th>
+              <th className="p-3 font-medium">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {RISKS.map((r, i) => (
+              <tr key={i} className="border-b last:border-0 align-top" style={{ borderColor: "#F1EEE7" }}>
+                <td className="p-3" style={{ color: "#33312C" }}>{r.risk}</td>
+                <td className="p-3" style={{ color: "#65635C" }}>{r.probability}</td>
+                <td className="p-3" style={{ color: "#65635C" }}>{r.impact}</td>
+                <td className="p-3" style={{ color: "#65635C" }}>{r.owner}</td>
+                <td className="p-3 text-xs max-w-xs" style={{ color: "#65635C" }}>{r.mitigation}</td>
+                <td className="p-3"><StatusBadge status={r.status} /></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </Card>
+    </div>
+  );
+}
+
+/* ============================================================
+   MAIN APP
+   ============================================================ */
+
+const TABS = [
+  { key: "overview", label: "Overview", icon: LayoutGrid, component: Overview },
+  { key: "tasks", label: "Tasks", icon: ListChecks, component: Tasks },
+  { key: "events", label: "Events", icon: CalendarDays, component: Events },
+  { key: "guests", label: "Guests", icon: Users, component: Guests },
+  { key: "vendors", label: "Vendors", icon: Store, component: Vendors },
+  { key: "decisions", label: "Decisions", icon: GitBranch, component: Decisions },
+  { key: "budget", label: "Budget", icon: Wallet, component: Budget },
+  { key: "design", label: "Design", icon: Palette, component: Design },
+  { key: "shower", label: "Bridal Shower", icon: PartyPopper, component: BridalShower },
+  { key: "week", label: "Wedding Week", icon: CalendarClock, component: WeddingWeek },
+  { key: "risks", label: "Risks", icon: AlertTriangle, component: Risks },
+];
+
+function WeddingCommandCentre() {
+  const [active, setActive] = useState("overview");
+  const ActiveComponent = TABS.find(t => t.key === active)?.component || Overview;
+
+  return (
+    <div className="min-h-screen w-full" style={{ backgroundColor: "#FAF8F3", fontFamily: "-apple-system, 'Helvetica Neue', Arial, sans-serif" }}>
+      <header className="border-b sticky top-0 z-10" style={{ backgroundColor: "#FAF8F3", borderColor: "#E7E2D8" }}>
+        <div className="max-w-6xl mx-auto px-5 pt-5 pb-3">
+          <div className="flex items-baseline justify-between flex-wrap gap-2">
+            <h1 style={{ fontFamily: "Georgia, 'Iowan Old Style', serif", fontSize: "1.5rem", color: "#33312C" }}>
+              Sandra <span style={{ color: "#B4934C" }}>&amp;</span> George
+            </h1>
+            <p className="text-xs" style={{ color: "#8B887F" }}>Wedding Command Centre · last updated 6 Sep 2026</p>
+          </div>
+        </div>
+        <nav className="max-w-6xl mx-auto px-5 overflow-x-auto">
+          <div className="flex gap-1 pb-2">
+            {TABS.map(t => {
+              const Icon = t.icon;
+              const isActive = active === t.key;
+              return (
+                <button key={t.key} onClick={() => setActive(t.key)} className="flex items-center gap-1.5 px-3 py-2 rounded-md text-sm whitespace-nowrap transition-colors"
+                  style={{ backgroundColor: isActive ? "#EAF0E6" : "transparent", color: isActive ? "#4C5B3F" : "#65635C", fontWeight: isActive ? 600 : 400 }}>
+                  <Icon size={15} />{t.label}
+                </button>
+              );
+            })}
+          </div>
+        </nav>
+      </header>
+      <main className="max-w-6xl mx-auto px-5 py-6"><ActiveComponent /></main>
+      <footer className="max-w-6xl mx-auto px-5 py-6 text-xs" style={{ color: "#B0AC9F" }}>
+        Built from Sandra_Wedding_Planning.xlsx. Nothing shown here has been invented — blanks mean the information
+        isn't on file yet, and nothing is marked FINAL unless explicitly confirmed by Sandra or George.
+      </footer>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<WeddingCommandCentre />);
+</script>
+</body>
+</html>
