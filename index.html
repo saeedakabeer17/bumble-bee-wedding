@@ -78,11 +78,13 @@ const GUESTS = [
 
 const VENDORS = [
   { id: "V-001", category: "Photography & Videography", name: "Twelvef Moments", quote: "₹165,000", finalCost: "₹165,000", status: "BOOKED", deposit: "₹10,000 (paid)", balance: "₹155,000", dueDate: "30 Dec 2026: ₹125,000; final ₹30,000 after album design", contact: "GPay 7559006626 (bank details in contract)", notes: "Contract signed. Covers Wedding Eve, Church, Reception incl. YouTube live." },
-  { id: "V-002", category: "Makeup & Hair", name: "Luxe by Sona Nalinan", quote: "~₹55,000 (approx.)", finalCost: "~₹55,000 (approx., not itemised)", status: "BOOKED", deposit: "—", balance: "—", dueDate: "—", contact: "Instagram: @luxe_by_sonanalinan", notes: "Wedding-day makeup. Budget is an approximate figure from Sandra, not a confirmed final quote." },
+  { id: "V-002", category: "Makeup & Hair", name: "Luxe by Sona Nalinan", quote: "₹40,000 (airbrush makeup & hair)", finalCost: "₹46,300 (₹40k makeup+hair + ₹3k saree draping + ₹3.3k travel)", status: "BOOKED", deposit: "₹4,000 (paid)", balance: "₹42,300", dueDate: "—", contact: "Instagram: @luxe_by_sonanalinan", notes: "Wedding-day makeup, corrected using the historical tracker. Only does bridal makeup — her assistant doesn't do hair, just saree draping/touch-up." },
   { id: "V-006", category: "Makeup & Hair", name: "Rehearsal dinner makeup — Lamea Naser and friends", quote: "₹0 (informal)", finalCost: "₹0", status: "BOOKED", deposit: "—", balance: "—", dueDate: "—", contact: "—", notes: "Informal arrangement — Sandra's rehearsal-dinner (27 Dec) makeup done by friends, not a paid vendor." },
   { id: "V-003", category: "Entertainment", name: "Live band — name not yet recorded", quote: "—", finalCost: "—", status: "BOOKED", deposit: "—", balance: "—", dueDate: "—", contact: "—", notes: "Confirmed booked for music; name, contact and price not yet provided (see T-012)." },
   { id: "V-004", category: "Entertainment", name: "Emcee", quote: "—", finalCost: "—", status: "RESEARCHING", deposit: "—", balance: "—", dueDate: "—", contact: "—", notes: "Not yet sourced. Owner: Sandra." },
   { id: "V-005", category: "Decor", name: "Reception decorator — name not yet recorded", quote: "—", finalCost: "—", status: "SHORTLISTED", deposit: "—", balance: "—", dueDate: "—", contact: "—", notes: "Stage mockup matches palette direction. Pampas grass in the mockup is an approved exception (see D-004), not a conflict." },
+  { id: "V-016", category: "Decor / Event Management", name: "Elixir Wedding Planners", quote: "~₹3-4 lakh (scaled) / ~₹7 lakh (premium)", finalCost: "—", status: "SHORTLISTED", deposit: "—", balance: "—", dueDate: "—", contact: "Instagram: @elixirweddingplanners", notes: "Front-runner — most responsive so far. Can also connect to makeup artist \"Rizwan\" at a lower rate through them." },
+  { id: "V-017", category: "Decor / Event Management", name: "St. Martins", quote: "Stage decor under ₹1,00,000", finalCost: "—", status: "RESEARCHING", deposit: "—", balance: "—", dueDate: "—", contact: "—", notes: "Needs a decor reference sent to get a real quote (see T-048)." },
 ];
 
 const DECISIONS = [
@@ -95,6 +97,7 @@ const DECISIONS = [
   { id: "D-007", category: "Photography & Videography", decision: "Photography & videography vendor", recommendation: "Confirmed.", finalChoice: "Twelvef Moments", status: "FINAL", date: "—", cost: "₹165,000" },
   { id: "D-008", category: "Venue & Logistics", decision: "Reception hall name", recommendation: "Resolved a factual naming conflict across records.", finalChoice: "IMA House — Trident Hall", status: "FINAL", date: "6 Sep 2026", cost: "—" },
   { id: "D-009", category: "Venue & Logistics / Church", decision: "Church exact name & address", recommendation: "Confirmed by Sandra, including full postal address.", finalChoice: "Jerusalem Mar Thoma Syrian Church, Blossom Road, Elamkulam, Kochi, Ernakulam, Kerala 682020", status: "FINAL", date: "6 Sep 2026", cost: "—" },
+  { id: "D-010", category: "Venue & Logistics", decision: "Reception venue selection (IMA House vs Chackolas)", recommendation: "Already decided historically — IMA House won on proximity to church, cost and complimentary perks.", finalChoice: "IMA House (Trident Hall)", status: "FINAL (historical)", date: "—", cost: "—" },
 ];
 
 const TASKS = [
@@ -141,11 +144,17 @@ const TASKS = [
   { id: "T-041", category: "Content & Social Media / Photography", task: "Confirm exact pre-wedding shoot date in November", owner: "Sandra & George", priority: "MEDIUM", status: "IDEA", deadline: "—" },
   { id: "T-042", category: "Church / Legal Requirements", task: "Confirm exact register marriage date in November", owner: "Sandra & George", priority: "MEDIUM", status: "IDEA", deadline: "—" },
   { id: "T-043", category: "Bridal Party / Church Ceremony", task: "Confirm bridesmaid dress design restrictions (sleeveless, low-back, etc.)", owner: "Sandra", priority: "HIGH", status: "AWAITING DECISION", deadline: "—" },
+  { id: "T-044", category: "Venue & Logistics", task: "Confirm which floor the hall is on (2nd floor vs rooftop)", owner: "Sandra", priority: "HIGH", status: "AWAITING DECISION", deadline: "—" },
+  { id: "T-045", category: "Venue & Logistics", task: "Confirm full list of hall-included services", owner: "Sandra", priority: "MEDIUM", status: "AWAITING DECISION", deadline: "—" },
+  { id: "T-046", category: "Venue & Logistics", task: "Confirm exact hall capacity", owner: "Sandra", priority: "MEDIUM", status: "AWAITING DECISION", deadline: "—" },
+  { id: "T-047", category: "Decor", task: "Send Elixir a brief before they lose interest", owner: "Sandra", priority: "HIGH", status: "AWAITING DECISION", deadline: "—" },
+  { id: "T-048", category: "Decor", task: "Pick a decor reference to send St. Martins for a quote", owner: "Sandra", priority: "MEDIUM", status: "AWAITING DECISION", deadline: "—" },
+  { id: "T-049", category: "Bride", task: "Decide on Sandra's reception saree/dress", owner: "Sandra", priority: "MEDIUM", status: "RESEARCHING", deadline: "—" },
 ];
 
 const BUDGET = [
   { category: "Photography & Videography", final: "₹165,000", paid: "₹10,000", balance: "₹155,000", status: "PARTIALLY PAID", vendor: "Twelvef Moments" },
-  { category: "Makeup & Hair", final: "~₹55,000 (approx.)", paid: "—", balance: "—", status: "QUOTED (approx.)", vendor: "Luxe by Sona Nalinan" },
+  { category: "Makeup & Hair", final: "₹46,300 (40k makeup+hair, 3k draping, 3.3k travel)", paid: "₹4,000", balance: "₹42,300", status: "PARTIALLY PAID", vendor: "Luxe by Sona Nalinan" },
   { category: "Gifts & Favours", final: "—", paid: "—", balance: "—", status: "NOT YET DUE", vendor: "TBD (cap ₹14,000)" },
 ];
 
@@ -282,7 +291,7 @@ function Overview() {
         <Card className="p-5">
           <p className="text-xs uppercase tracking-wide" style={{ color: "#8B887F" }}>Budget approach</p>
           <p className="text-lg mt-1" style={{ fontFamily: "Georgia, serif", color: "#33312C" }}>Per-item, no total</p>
-          <p className="text-xs mt-1" style={{ color: "#8B887F" }}>~₹220,000 committed so far (photography + makeup, approx.)</p>
+          <p className="text-xs mt-1" style={{ color: "#8B887F" }}>~₹211,300 committed so far (photography + makeup)</p>
         </Card>
       </div>
 
@@ -629,9 +638,9 @@ function Budget() {
       <SectionHeading title="Budget Tracker" />
       <Card className="p-5 mb-5 text-sm" style={{ color: "#65635C" }}>{BRIEF.budgetNote}</Card>
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-5">
-        <Stat label="Total committed" value="~₹220,000" />
-        <Stat label="Total paid" value="₹10,000" />
-        <Stat label="Total balance / pending" value="₹155,000 + ~₹55,000" />
+        <Stat label="Total committed" value="₹211,300" />
+        <Stat label="Total paid" value="₹14,000" />
+        <Stat label="Total balance" value="₹197,300" />
       </div>
       <Card className="overflow-x-auto">
         <table className="w-full text-sm">
